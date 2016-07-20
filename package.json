@@ -42,7 +42,7 @@
     "firebase": "^2.4.0 || 3.x.x"
   },
   "scripts": {
-    "postinstall": "gulp",
+    "postinstall": "gulp build",
     "test": "gulp test",
     "travis": "gulp"
   }
