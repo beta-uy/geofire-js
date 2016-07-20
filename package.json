@@ -20,12 +20,6 @@
     "geolocation"
   ],
   "main": "dist/geofire.js",
-  // "files": [
-    // "dist/**",
-    // "LICENSE",
-    // "README.md",
-    // "package.json"
-  // ],
   "dependencies": {
   },
   "peerDependencies": {
