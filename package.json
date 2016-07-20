@@ -20,20 +20,20 @@
     "geolocation"
   ],
   "main": "dist/geofire.js",
-  "files": [
-    "dist/**",
-    "LICENSE",
-    "README.md",
-    "package.json"
-  ],
+  // "files": [
+    // "dist/**",
+    // "LICENSE",
+    // "README.md",
+    // "package.json"
+  // ],
   "dependencies": {
-    "gulp": "3.9.0"
   },
   "peerDependencies": {
     "firebase": "^2.4.0 || 3.x.x"
   },
   "devDependencies": {
     "coveralls": "2.11.4",
+    "gulp": "3.9.0",
     "gulp-concat": "2.6.0",
     "gulp-ext-replace": "0.2.0",
     "gulp-jshint": "1.11.2",
@@ -50,7 +50,7 @@
     "streamqueue": "0.1.1"
   },
   "scripts": {
-    "preinstall": "gulp",
+    "postinstall": "gulp",
     "test": "gulp test",
     "travis": "gulp"
   }
