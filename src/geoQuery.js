@@ -18,13 +18,13 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {?Array.<number>} location The location as [latitude, longitude] pair
    * @param {?double} distanceFromCenter The distance from the center or null.
    */
-  function _fireCallbacksForKey(eventType, key, location, distanceFromCenter) {
+  function _fireCallbacksForKey(eventType, key, location, distanceFromCenter, info) {
     _callbacks[eventType].forEach(function(callback) {
       if (typeof location === "undefined" || location === null) {
-        callback(key, null, null);
+        callback(key, null, null, info);
       }
       else {
-        callback(key, location, distanceFromCenter);
+        callback(key, location, distanceFromCenter, info);
       }
     });
   }
@@ -129,7 +129,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {string} key The key of the geofire location.
    * @param {?Array.<number>} location The location as [latitude, longitude] pair.
    */
-  function _updateLocation(key, location) {
+  function _updateLocation(key, location, info) {
     validateLocation(location);
     // Get the key and location
     var distanceFromCenter, isInQuery;
@@ -145,16 +145,17 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
       location: location,
       distanceFromCenter: distanceFromCenter,
       isInQuery: isInQuery,
-      geohash: encodeGeohash(location, g_GEOHASH_PRECISION)
+      geohash: encodeGeohash(location, g_GEOHASH_PRECISION),
+      info: info
     };
 
     // Fire the "key_entered" event if the provided key has entered this query
     if (isInQuery && !wasInQuery) {
-      _fireCallbacksForKey("key_entered", key, location, distanceFromCenter);
+      _fireCallbacksForKey("key_entered", key, location, distanceFromCenter, info);
     } else if (isInQuery && oldLocation !== null && (location[0] !== oldLocation[0] || location[1] !== oldLocation[1])) {
-      _fireCallbacksForKey("key_moved", key, location, distanceFromCenter);
+      _fireCallbacksForKey("key_moved", key, location, distanceFromCenter, info);
     } else if (!isInQuery && wasInQuery) {
-      _fireCallbacksForKey("key_exited", key, location, distanceFromCenter);
+      _fireCallbacksForKey("key_exited", key, location, distanceFromCenter, info);
     }
   }
 
@@ -201,7 +202,9 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Firebase DataSnapshot} locationDataSnapshot A snapshot of the data stored for this location.
    */
   function _childAddedCallback(locationDataSnapshot) {
-    _updateLocation(getKey(locationDataSnapshot), decodeGeoFireObject(locationDataSnapshot.val()));
+    _updateLocation(getKey(locationDataSnapshot), 
+                    decodeGeoFireObject(locationDataSnapshot.val()),
+                    locationDataSnapshot.val().i);
   }
 
   /**
@@ -210,7 +213,9 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Firebase DataSnapshot} locationDataSnapshot A snapshot of the data stored for this location.
    */
   function _childChangedCallback(locationDataSnapshot) {
-    _updateLocation(getKey(locationDataSnapshot), decodeGeoFireObject(locationDataSnapshot.val()));
+    _updateLocation(getKey(locationDataSnapshot), 
+                    decodeGeoFireObject(locationDataSnapshot.val()),
+                    locationDataSnapshot.val().i);
   }
 
   /**
@@ -385,12 +390,12 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
 
       // If the location just left the query, fire the "key_exited" callbacks
       if (wasAlreadyInQuery && !locationDict.isInQuery) {
-        _fireCallbacksForKey("key_exited", key, locationDict.location, locationDict.distanceFromCenter);
+        _fireCallbacksForKey("key_exited", key, locationDict.location, locationDict.distanceFromCenter, locationDict.info);
       }
 
       // If the location just entered the query, fire the "key_entered" callbacks
       else if (!wasAlreadyInQuery && locationDict.isInQuery) {
-        _fireCallbacksForKey("key_entered", key, locationDict.location, locationDict.distanceFromCenter);
+        _fireCallbacksForKey("key_entered", key, locationDict.location, locationDict.distanceFromCenter, locationDict.info);
       }
     }
 
@@ -450,7 +455,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
         var key = keys[i];
         var locationDict = _locationsTracked[key];
         if (typeof locationDict !== "undefined" && locationDict.isInQuery) {
-          callback(key, locationDict.location, locationDict.distanceFromCenter);
+          callback(key, locationDict.location, locationDict.distanceFromCenter, locationDict.info);
         }
       }
     }
