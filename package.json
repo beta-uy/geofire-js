@@ -21,13 +21,8 @@
   ],
   "main": "dist/geofire.js",
   "dependencies": {
-    "gulp": "3.9.0"
-  },
-  "peerDependencies": {
-    "firebase": "^2.4.0 || 3.x.x"
-  },
-  "devDependencies": {
     "coveralls": "2.11.4",
+    "gulp": "3.9.0",
     "gulp-concat": "2.6.0",
     "gulp-ext-replace": "0.2.0",
     "gulp-jshint": "1.11.2",
@@ -42,6 +37,9 @@
     "karma-spec-reporter": "0.0.20",
     "run-sequence": "^1.1.4",
     "streamqueue": "0.1.1"
+  },
+  "peerDependencies": {
+    "firebase": "^2.4.0 || 3.x.x"
   },
   "scripts": {
     "postinstall": "gulp",
