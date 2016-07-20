@@ -50,7 +50,7 @@
     "streamqueue": "0.1.1"
   },
   "scripts": {
-    "postinstall": "gulp",
+    "preinstall": "gulp",
     "test": "gulp test",
     "travis": "gulp"
   }
